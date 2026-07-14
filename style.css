@@ -41,18 +41,11 @@ body {
     font-size: 12px;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: #ffffff;
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 28px;
-}
-
-.eyebrow::before {
-    content: "";
-    width: 26px;
-    height: 2px;
-    background: var(--gold);
 }
 
 .hero-grid {

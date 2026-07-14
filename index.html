@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificados — Gabriel Teramae Chan</title>
+
+    <meta name="description"
+        content="Registro de credenciais de Gabriel Teramae Chan: certificados organizados por categoria, instituição e carga horária.">
+    <meta name="author" content="Gabriel Teramae Chan">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="pt-BR">
+    <meta name="theme-color" content="#10131f">
+    <link rel="canonical" href="https://gabrielteramae.github.io/certificados/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Certificados — Gabriel Teramae Chan">
+    <meta property="og:description"
+        content="Registro de credenciais organizado por categoria, instituição e carga horária.">
+    <meta property="og:url" content="https://gabrielteramae.github.io/certificados/">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="Certificados — Gabriel Teramae Chan">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Certificados — Gabriel Teramae Chan">
+    <meta name="twitter:description"
+        content="Registro de credenciais organizado por categoria, instituição e carga horária.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div id="app">
+
+        <div class="hero">
+            <div class="eyebrow">Registro de credenciais</div>
+            <div class="hero-grid">
+                <div>
+                    <div class="big-count">{{ pad(total) }}</div>
+                    <div class="count-label">certificados emitidos</div>
+                </div>
+                <div class="hero-copy">
+                    <h1>Um livro-razão de tudo que <span class="accent">estudei, testei e concluí</span> — de risco de
+                        crédito a infraestrutura em nuvem.</h1>
+                    <div class="hero-meta">
+                        <span><b>{{ institutions.length }}</b> instituições</span>
+                        <span><b>{{ categories.length }}</b> categorias</span>
+                        <span><b>{{ yearRange }}</b> período</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section id="dashboard">
+            <div class="section-head">
+                <h2>Painel</h2>
+                <span class="section-num">01 / visão geral</span>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="n">{{ pad(total) }}</div>
+                    <div class="l">Certificados</div>
+                </div>
+                <div class="stat">
+                    <div class="n">{{ pad(institutions.length) }}</div>
+                    <div class="l">Instituições</div>
+                </div>
+                <div class="stat">
+                    <div class="n">{{ pad(categories.length) }}</div>
+                    <div class="l">Categorias</div>
+                </div>
+                <div class="stat">
+                    <div class="n">{{ Math.round(totalHours) }}h</div>
+                    <div class="l">Horas de estudo</div>
+                </div>
+            </div>
+
+            <div class="charts">
+                <div class="chart-panel">
+                    <h3>Por categoria</h3>
+                    <div class="chart-wrap"><canvas ref="catCanvas"></canvas></div>
+                </div>
+                <div class="chart-panel">
+                    <h3>Por instituição</h3>
+                    <div class="chart-wrap" :style="{height: instChartHeight + 'px'}"><canvas ref="instCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ledger">
+            <div class="section-head">
+                <h2>Ledger</h2>
+                <span class="section-num">02 / entradas</span>
+            </div>
+
+            <div class="filters">
+                <button class="filter-chip" :class="{active: activeFilter === null}" @click="activeFilter = null">
+                    Todos ({{ total }})
+                </button>
+                <button v-for="cat in categories" :key="cat" class="filter-chip" :class="{active: activeFilter === cat}"
+                    :style="activeFilter === cat ? {background: categoryColor(cat), borderColor: categoryColor(cat)} : {}"
+                    @click="activeFilter = activeFilter === cat ? null : cat">
+                    <span class="chip-dot" :style="{background: categoryColor(cat)}"></span>
+                    {{ cat }} ({{ countByCategory(cat) }})
+                </button>
+            </div>
+
+            <div class="ledger">
+                <div class="entry" v-for="(c, i) in sortedFilteredCertificates" :key="c.title">
+                    <div class="idx">{{ pad(i + 1) }}</div>
+                    <div>
+                        <div class="title">{{ c.title }}</div>
+                        <div class="inst">{{ c.institution }}</div>
+                    </div>
+                    <div class="tag"
+                        :style="{borderColor: categoryColor(c.category), color: categoryColor(c.category)}">{{
+                        c.category }}</div>
+                    <div class="date">
+                        {{ c.date }}
+                        <div class="hours" v-if="c.hours">{{ formatHours(c.hours) }}</div>
+                    </div>
+                    <svg viewBox="0 0 64 64" class="stamp" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="32" cy="32" r="29" fill="none" stroke="#b23a2e" stroke-width="1.5" />
+                        <circle cx="32" cy="32" r="24" fill="none" stroke="#b23a2e" stroke-width="1" />
+                        <text x="32" y="29" text-anchor="middle" font-family="IBM Plex Mono" font-size="7"
+                            fill="#b23a2e" letter-spacing="1">VERIFI-</text>
+                        <text x="32" y="38" text-anchor="middle" font-family="IBM Plex Mono" font-size="7"
+                            fill="#b23a2e" letter-spacing="1">CADO</text>
+                    </svg>
+                </div>
+                <div class="empty" v-if="filteredCertificates.length === 0">
+                    Nenhum certificado nessa categoria ainda.
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <span>© 2026 Gabriel Teramae Chan</span>
+            <a href="https://github.com/gabrielteramae" target="_blank" rel="noopener">github.com/gabrielteramae</a>
+        </footer>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.31/vue.global.prod.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

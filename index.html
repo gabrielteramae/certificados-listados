@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Certificados — Gabriel Teramae Chan</title>
 
-    <meta name="description" content="Registro de credenciais de Gabriel Teramae Chan: certificados organizados por categoria, instituição e carga horária.">
+    <meta name="description" content="Registro de certificados de Gabriel Teramae Chan: organizados por categoria, instituição e carga horária.">
     <meta name="author" content="Gabriel Teramae Chan">
     <meta name="robots" content="index, follow">
     <meta name="language" content="pt-BR">
@@ -25,14 +25,13 @@
     <div id="app">
 
         <div class="hero">
-            <div class="eyebrow">Registro de credenciais</div>
+            <div class="eyebrow">Registro de certificados</div>
             <div class="hero-grid">
                 <div>
                     <div class="big-count">{{ pad(total) }}</div>
                     <div class="count-label">certificados emitidos</div>
                 </div>
                 <div class="hero-copy">
-                    <h1>Um livro-razão de tudo que <span class="accent">estudei, testei e concluí</span> — de risco de crédito a infraestrutura em nuvem.</h1>
                     <div class="hero-meta">
                         <span><b>{{ institutions.length }}</b> instituições</span>
                         <span><b>{{ categories.length }}</b> categorias</span>
@@ -64,17 +63,6 @@
                 <div class="stat">
                     <div class="n">{{ Math.round(totalHours) }}h</div>
                     <div class="l">Horas de estudo</div>
-                </div>
-            </div>
-
-            <div class="charts">
-                <div class="chart-panel">
-                    <h3>Por categoria</h3>
-                    <div class="chart-wrap"><canvas ref="catCanvas"></canvas></div>
-                </div>
-                <div class="chart-panel">
-                    <h3>Por instituição</h3>
-                    <div class="chart-wrap" :style="{height: instChartHeight + 'px'}"><canvas ref="instCanvas"></canvas></div>
                 </div>
             </div>
         </section>

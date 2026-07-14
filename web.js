@@ -28,7 +28,7 @@ const CERTIFICATES = [
     { title: "USP PENSA BRASIL — Evento Geral", institution: "USP", category: "Meio Ambiente & Sustentabilidade", date: "Ago 2024", sort: "2024-08-16", year: 2024 }
 ];
 
-const PALETTE = ["#b8935a", "#4a4f63", "#2f6f6b", "#b23a2e", "#c98a3a", "#5c7a99", "#8b5e83", "#7c8a6e"];
+const PALETTE = ["#ea580c", "#2563eb", "#059669", "#7c3aed", "#db2777", "#0284c7", "#d97706", "#0d9488"];
 
 createApp({
     setup() {
@@ -50,10 +50,7 @@ createApp({
         });
 
         const instChartHeight = computed(() => Math.max(260, institutions.value.length * 28));
-
-        const totalHours = computed(() =>
-            certificates.value.reduce((sum, c) => sum + (c.hours || 0), 0)
-        );
+        const totalHours = computed(() => certificates.value.reduce((sum, c) => sum + (c.hours || 0), 0));
 
         function formatHours(h) {
             const rounded = Math.round(h * 10) / 10;
@@ -74,13 +71,8 @@ createApp({
             [...filteredCertificates.value].sort((a, b) => (b.sort || "").localeCompare(a.sort || ""))
         );
 
-        function pad(n) {
-            return String(n).padStart(2, "0");
-        }
-
-        function countByCategory(cat) {
-            return certificates.value.filter(c => c.category === cat).length;
-        }
+        function pad(n) { return String(n).padStart(2, "0"); }
+        function countByCategory(cat) { return certificates.value.filter(c => c.category === cat).length; }
 
         function renderCharts() {
             const catCounts = categories.value.map(cat => countByCategory(cat));
@@ -91,20 +83,23 @@ createApp({
             if (catChart) catChart.destroy();
             if (instChart) instChart.destroy();
 
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = "#64748b";
+
             catChart = new Chart(catCanvas.value, {
                 type: "doughnut",
                 data: {
                     labels: categories.value,
-                    datasets: [{ data: catCounts, backgroundColor: PALETTE, borderColor: "#f5f1e8", borderWidth: 3 }]
+                    datasets: [{ data: catCounts, backgroundColor: PALETTE, borderWidth: 0 }]
                 },
                 options: {
                     plugins: {
                         legend: {
                             position: "bottom",
-                            labels: { font: { family: "IBM Plex Mono", size: 11 }, color: "#5c5847", boxWidth: 12, padding: 14 }
+                            labels: { font: { size: 12, weight: 600 }, boxWidth: 12, padding: 16 }
                         }
                     },
-                    cutout: "62%"
+                    cutout: "65%"
                 }
             });
 
@@ -112,44 +107,26 @@ createApp({
                 type: "bar",
                 data: {
                     labels: institutions.value,
-                    datasets: [{ data: instCounts, backgroundColor: "#b23a2e", borderRadius: 2, maxBarThickness: 34 }]
+                    datasets: [{ data: instCounts, backgroundColor: "#0f172a", borderRadius: 4, maxBarThickness: 24 }]
                 },
                 options: {
                     indexAxis: "y",
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { stepSize: 1, font: { family: "IBM Plex Mono", size: 11 }, color: "#5c5847" }, grid: { color: "#e2d9c4" } },
-                        y: { ticks: { font: { family: "IBM Plex Mono", size: 11 }, color: "#1c1f2b" }, grid: { display: false } }
+                        x: { ticks: { stepSize: 1, font: { size: 12 } }, grid: { color: "#e2e8f0" } },
+                        y: { ticks: { font: { size: 12, weight: 500 }, color: "#0f172a" }, grid: { display: false } }
                     }
                 }
             });
         }
 
-        onMounted(() => {
-            nextTick(renderCharts);
-        });
-
-        watch(certificates, () => {
-            nextTick(renderCharts);
-        }, { deep: true });
+        onMounted(() => { nextTick(renderCharts); });
+        watch(certificates, () => { nextTick(renderCharts); }, { deep: true });
 
         return {
-            certificates,
-            activeFilter,
-            catCanvas,
-            instCanvas,
-            total,
-            institutions,
-            categories,
-            yearRange,
-            filteredCertificates,
-            sortedFilteredCertificates,
-            instChartHeight,
-            totalHours,
-            pad,
-            countByCategory,
-            categoryColor,
-            formatHours
+            certificates, activeFilter, catCanvas, instCanvas, total, institutions, categories, yearRange,
+            filteredCertificates, sortedFilteredCertificates, instChartHeight, totalHours, pad, countByCategory,
+            categoryColor, formatHours
         };
     }
 }).mount("#app");
